@@ -3,8 +3,9 @@ const BadRequest = require('../errors/BadRequest');
 const NotFound = require('../errors/NotFound');
 const Forbidden = require('../errors/Forbidden');
 
-const getMovie = (_, response, next) => {
-  Movie.find({})
+const getMovie = (request, response, next) => {
+  const owner = request.user._id;
+  Movie.find({ owner })
     .then((movie) => {
       response.status(200).send(movie);
     })
