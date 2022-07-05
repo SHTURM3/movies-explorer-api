@@ -75,8 +75,8 @@ const getCurrentUser = (request, response, next) => {
 };
 
 const changeProfile = (request, response, next) => {
-  const { name } = request.body;
-  User.findByIdAndUpdate(request.user._id, { name }, { new: true, runValidators: true })
+  const { name, email } = request.body;
+  User.findByIdAndUpdate(request.user._id, { name, email }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
         throw new NotFound('Такого пользователя не существует.');
