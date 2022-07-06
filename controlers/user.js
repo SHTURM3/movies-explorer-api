@@ -15,9 +15,7 @@ const login = (request, response, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       console.log('function - login ==>', user);
-      if (!user) {
-        throw new BadRequest('Пользователь не найден.');
-      }
+
       response.send({
         token: jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'yandex-practicum-thebest', { expiresIn: '7d' }),
       });
