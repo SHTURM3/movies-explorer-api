@@ -91,6 +91,9 @@ const changeProfile = (request, response, next) => {
       if (err.kind === 'ObjectId') {
         return next(new BadRequest('ID пользователя передано некорретно.'));
       }
+      if (err.code === 11000) {
+        return next(new Conflict('Такой email уже зарегестрирован.'));
+      }
       return next(err);
     });
 };
