@@ -88,9 +88,6 @@ const changeProfile = (request, response, next) => {
       if (err.name === 'ValidationError') {
         return next(new BadRequest('Имя или описание пользователя не должно быть менее 2-х и более 30-ти символов.'));
       }
-      if (err.kind === 'ObjectId') {
-        return next(new BadRequest('ID пользователя передано некорретно.'));
-      }
       if (err.code === 11000) {
         return next(new Conflict('Такой email уже зарегестрирован.'));
       }
