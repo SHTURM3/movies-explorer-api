@@ -1,16 +1,17 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const auth = require('./middlewares/auth');
-const { userRouter } = require('./routes/user');
-const { movieRouter } = require('./routes/movie');
-const { createUser, login } = require('./controlers/user');
+const helmet = require('helmet');
+const cors = require('cors');
+const { errors } = require('celebrate');
+
+const { dataMovies, PORT } = require('./config/config');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const NotFound = require('./errors/NotFound');
+const routes = require('./routes/index');
 
-const { PORT = 3000 } = process.env;
+const serverError = require('./middlewares/serverError');
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb');
+mongoose.connect(dataMovies);
 
 const app = express();
 
@@ -18,26 +19,17 @@ app.use(express.json());
 
 app.use(requestLogger);
 
-app.post('/signup', createUser);
+app.use(helmet());
 
-app.post('/signin', login);
+app.use(cors());
 
-app.use(auth);
-
-app.use('/users', userRouter);
-
-app.use('/movies', movieRouter);
-
-app.use('*', (_, __, next) => next(new NotFound('Такой страницы не существует.')));
+app.use(routes);
 
 app.use(errorLogger);
 
-app.use((error, _, response, next) => {
-  const { statusCode = 500, message } = error;
+app.use(errors());
 
-  response.status(statusCode).send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message });
-  next();
-});
+app.use(serverError);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
